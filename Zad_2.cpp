@@ -2,7 +2,7 @@
 #pragma ide diagnostic ignored "Simplify"
 // Algorytm Prima
 
-const bool DEBUG = true;
+const bool DEBUG = false;
 
 #include <iostream>
 
@@ -48,6 +48,8 @@ public:
     TreeNode *get_node_from_tree(int node_number);
 
     void printTree();
+
+    void showWeight() const;
 };
 
 
@@ -153,24 +155,30 @@ TreeNode *MSTree::get_node_from_tree(int node_number) {
     return neighbours_table[node_number];
 }
 
+void MSTree::showWeight() const {
+    std::cout << tree_weight << std::endl;
+}
+
 void MSTree::printTree() {
     TreeNode *node;
-
     std::cout << std::endl;
-    for (int i = 0; i <= num_of_cells_in_table; i++) {
-        std::cout << "Vertex " << i << " - ";
-        for (node = neighbours_table[i]; node; node = node->next) {
-            std::cout << node->vertex << ":" << node->weight << " ";
+    for (int current_vertex = 0; current_vertex <= num_of_cells_in_table; current_vertex++) {
+        for (node = neighbours_table[current_vertex]; node; node = node->next) {
+            std::cout << "Edge " << current_vertex << " - ";
+            std::cout << node->vertex << " weight " << node->weight << std::endl;
         }
-        std::cout << std::endl;
     }
     std::cout << std::endl << std::endl << "Minimal Spanning Tree Weight = " << tree_weight << std::endl << std::endl;
 }
 
 void load_edges_from_stdin(int number_of_edges, MSTree &graph) {
     MSTEdge edge{};
+    int start_vertex;
+    int end_vertex;
     for (int i = 0; i < number_of_edges; i++) {
-        std::cin >> edge.start_vertex >> edge.end_vertex >> edge.vertex_weight;
+        std::cin >> start_vertex >> end_vertex >> edge.vertex_weight;
+        edge.start_vertex = start_vertex - 1;
+        edge.end_vertex = end_vertex - 1;
         graph.addEdge(edge);
     }
 }
@@ -214,20 +222,22 @@ void find_mst(int number_of_vertexes, int number_of_edges, MSTree &graph) {
     }
     if (DEBUG) {
         final_mst.printTree();
+    } else {
+        final_mst.showWeight();
     }
     delete[] already_visited;
 }
 
 int main() {
     int number_of_vertexes, number_of_edges;
-
-    std::cin >> number_of_vertexes >> number_of_edges;
-
-    MSTree graph(number_of_vertexes);
-
-    load_edges_from_stdin(number_of_edges, graph);
-
-    find_mst(number_of_vertexes, number_of_edges, graph);
+    int number_of_cases;
+    std::cin >> number_of_cases;
+    for (int case_num = 0; case_num < number_of_cases; case_num++) {
+        std::cin >> number_of_vertexes >> number_of_edges;
+        MSTree graph(number_of_vertexes);
+        load_edges_from_stdin(number_of_edges, graph);
+        find_mst(number_of_vertexes, number_of_edges, graph);
+    }
 
     return 0;
 }
